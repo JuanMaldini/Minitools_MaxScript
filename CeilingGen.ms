@@ -51,7 +51,9 @@ toolTip:"C Gen"
 				$.modifiers[#UVW_Map].width = 1
 				$.modifiers[#UVW_Map].height = 1
 
-				---
+
+				------------------
+
 
 				-- Clone the current selection and capture the new object(s)
 				maxOps.cloneNodes $ cloneType:#copy newNodes:&theNewObject
@@ -59,12 +61,6 @@ toolTip:"C Gen"
 				-- Rename the new object and select it
 				theNewObject[1].name = theSpline.name + "_Grid"
 				select theNewObject[1]
-
-
-------------------
-
-
-
 
 				-- Add Edit Poly modifier to the "_Grid" object
 				modPanel.addModToSelection (Edit_Poly()) ui:on
@@ -125,13 +121,7 @@ toolTip:"C Gen"
 				uvwMod.realWorldMapSize = on
 
 
-
-
-
-------------------
-
-
-
+				------------------
 
 
 			)
