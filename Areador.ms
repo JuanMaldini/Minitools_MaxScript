@@ -2,14 +2,22 @@ macroScript Areador category:"0_Minitools"
 (
     fn formatNumber value decimals:1 =
     (
-        local stream = stringStream ""
-        local fmt = "%"
-        if decimals > 0 then fmt += "." + (decimals as string)
-        fmt += "f"
-        format fmt value to:stream
-        local result = stream as string
-        close stream
-        result
+        local sign = if value < 0 then "-" else ""
+        local absValue = abs value
+        local scale = 1
+        for i = 1 to decimals do scale *= 10
+        local total = floor (absValue * scale + 0.5)
+        local integerPart = (total / scale) as integer
+        local fractionPart = total - integerPart * scale
+        local intStr = integerPart as string
+        local fracStr = ""
+        if decimals > 0 do
+        (
+            fracStr = fractionPart as integer as string
+            while fracStr.count < decimals do fracStr = "0" + fracStr
+            fracStr = "." + fracStr
+        )
+        sign + intStr + fracStr
     )
 
     fn convertToUnit value unitSuffix =
