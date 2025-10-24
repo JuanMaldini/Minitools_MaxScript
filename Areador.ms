@@ -20,16 +20,64 @@ macroScript Areador category:"0_Minitools"
         sign + intStr + fracStr
     )
 
+    -- Decode unit strings robustly across locales and 3ds Max variants
+    fn decodeUnitValue unitSuffix =
+    (
+        local u = toLower unitSuffix
+        local candidates = case u of
+        (
+            "ft": #("1ft", "1'", "1 feet", "1 foot")
+            "feet": #("1ft", "1'", "1 feet", "1 foot")
+            "foot": #("1ft", "1'", "1 feet", "1 foot")
+            "in": #("1in", "1\"", "1 inch", "1 inches")
+            "inch": #("1in", "1\"", "1 inch", "1 inches")
+            "inches": #("1in", "1\"", "1 inch", "1 inches")
+            "m": #("1m", "1 meter", "1 metre")
+            "meter": #("1m", "1 meter", "1 metre")
+            "metre": #("1m", "1 meter", "1 metre")
+            "cm": #("1cm", "1 centimeter", "1 centimetre")
+            "centimeter": #("1cm", "1 centimeter", "1 centimetre")
+            "centimetre": #("1cm", "1 centimeter", "1 centimetre")
+            default: #(("1" + unitSuffix))
+        )
+        for c in candidates do
+        (
+            local v = try(units.decodeValue c) catch 0.0
+            if v != 0.0 do return v
+        )
+        0.0
+    )
+
     fn convertToUnit value unitSuffix =
     (
-        local unitValue = units.decodeValue ("1" + unitSuffix)
+        local unitValue = decodeUnitValue unitSuffix
         if unitValue == 0 then 0 else value / unitValue
     )
 
     fn convertAreaToUnit value unitSuffix =
     (
-        local unitValue = units.decodeValue ("1" + unitSuffix)
+        local unitValue = decodeUnitValue unitSuffix
         if unitValue == 0 then 0 else value / (unitValue * unitValue)
+    )
+
+    -- Robustly determine US display pair (feet/inches or inches/feet)
+    fn getUSUnitPair =
+    (
+        local usTypeStr = toLower (units.USType as string)
+        -- Default to feet primary
+        local primarySuffix = "ft"
+        local secondarySuffix = "in"
+        local primaryLabel = "ft"
+        local secondaryLabel = "in"
+
+        -- If it's explicitly an inches-only mode (decimal or fractional inches), make inches primary
+        if (matchPattern usTypeStr pattern:"*inch*") and not (matchPattern usTypeStr pattern:"*feet*" or matchPattern usTypeStr pattern:"*foot*") do
+        (
+            primarySuffix = "in"; secondarySuffix = "ft"
+            primaryLabel = "in"; secondaryLabel = "ft"
+        )
+
+        #(primarySuffix, secondarySuffix, primaryLabel, secondaryLabel)
     )
 
     fn buildLengthText value label =
@@ -59,21 +107,12 @@ macroScript Areador category:"0_Minitools"
         )
         else if units.DisplayType == #us then
         (
-            local usTypeStr = units.USType as string
-            if findString usTypeStr "inch" != undefined then
-            (
-                primaryValue = convertToUnit value "in"
-                secondaryValue = convertToUnit value "ft"
-                primaryLabel = "in"
-                secondaryLabel = "ft"
-            )
-            else
-            (
-                primaryValue = convertToUnit value "ft"
-                secondaryValue = convertToUnit value "in"
-                primaryLabel = "ft"
-                secondaryLabel = "in"
-            )
+            local pair = getUSUnitPair()
+            local pSuf = pair[1]; local sSuf = pair[2]
+            primaryValue = convertToUnit value pSuf
+            secondaryValue = convertToUnit value sSuf
+            primaryLabel = pair[3]
+            secondaryLabel = pair[4]
         )
 
         label + ": " + formatNumber primaryValue + " " + primaryLabel + " | " + formatNumber secondaryValue + " " + secondaryLabel
@@ -106,21 +145,12 @@ macroScript Areador category:"0_Minitools"
         )
         else if units.DisplayType == #us then
         (
-            local usTypeStr = units.USType as string
-            if findString usTypeStr "inch" != undefined then
-            (
-                primaryValue = convertAreaToUnit value "in"
-                secondaryValue = convertAreaToUnit value "ft"
-                primaryLabel = "in"
-                secondaryLabel = "ft"
-            )
-            else
-            (
-                primaryValue = convertAreaToUnit value "ft"
-                secondaryValue = convertAreaToUnit value "in"
-                primaryLabel = "ft"
-                secondaryLabel = "in"
-            )
+            local pair = getUSUnitPair()
+            local pSuf = pair[1]; local sSuf = pair[2]
+            primaryValue = convertAreaToUnit value pSuf
+            secondaryValue = convertAreaToUnit value sSuf
+            primaryLabel = pair[3]
+            secondaryLabel = pair[4]
         )
 
         label + ": " + formatNumber primaryValue + " " + primaryLabel + " | " + formatNumber secondaryValue + " " + secondaryLabel
