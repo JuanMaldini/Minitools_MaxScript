@@ -13,7 +13,7 @@ macroScript Areador category:"0_Minitools"
         local fracStr = ""
         if decimals > 0 do
         (
-            fracStr = fractionPart as integer as string
+            fracStr = (fractionPart as integer) as string
             while fracStr.count < decimals do fracStr = "0" + fracStr
             fracStr = "." + fracStr
         )
