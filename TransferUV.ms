@@ -1,4 +1,7 @@
-for obj in selection do
+macroScript TransferUV category:"Minitools"
 (
-	obj.modifiers[#SteamRoller_Ch2].unwrap.setMapChannel 0
+	for obj in selection do
+		(
+			obj.modifiers[#SteamRoller_Ch2].unwrap.setMapChannel 0
+		)
 )

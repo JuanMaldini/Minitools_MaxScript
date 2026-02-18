@@ -1,4 +1,4 @@
-macroScript Areador category:"0_Minitools"
+macroScript Areador category:"Minitools"
 (
     fn formatNumber value decimals:1 =
     (

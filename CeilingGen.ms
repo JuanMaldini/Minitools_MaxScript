@@ -1,3 +1,4 @@
+macroScript CeilingGen category:"Minitools"
 global Size = 50.0
 global Border = false
 

@@ -1,4 +1,4 @@
-macroScript SeamComp category:"0_Minitools"
+macroScript SeamComp category:"Minitools"
 (
 	global sc_selectedShape = undefined
 

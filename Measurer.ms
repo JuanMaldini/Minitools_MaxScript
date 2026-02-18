@@ -1,4 +1,4 @@
-macroScript Measurer category:"0_Minitools"
+macroScript Measurer category:"Minitools"
 (
     fn formatNumber value decimals:1 =
     (
