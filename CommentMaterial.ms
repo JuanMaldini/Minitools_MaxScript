@@ -16,7 +16,7 @@
 
 global CommentMaterial_Data
 global CommentMaterial_Timer
-global CommentMaterial_Prefix = "[C] "
+global CommentMaterial_Prefix = ""
 
 if CommentMaterial_Data == undefined do CommentMaterial_Data = #()
 
